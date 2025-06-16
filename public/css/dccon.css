@@ -1,0 +1,225 @@
+div.dcconDiv {
+	border-radius: 12px;
+	height: 390px;
+    z-index: 10;
+	background: #1d1f22;
+	display: flex;
+    flex-direction: column;
+    bottom: calc(100% - 3px);
+    left: 18px;
+    position: absolute;
+    right: 18px;
+    z-index: 10;
+}
+div.dcconDiv div.dcconHeader {
+	display: flex;
+	flex-direction: row;
+    padding: 15px 15px 2px;
+	align-items: flex-start;
+}
+div.dcconDiv div.dcconHeader strong {
+	font-size: 14px;
+	color: #c9cedc;
+	cursor: move;
+    display: block;
+    font-family: Sandoll Nemony2, Apple SD Gothic NEO, Helvetica Neue, Helvetica, 나눔고딕, NanumGothic, Malgun Gothic, 맑은 고딕, 굴림, gulim, 새굴림, noto sans, 돋움, Dotum, sans-serif;
+}
+div.dcconDiv div.dcconHeader span {
+	color: #c9cedc;
+	cursor: pointer;
+	margin-left: auto;
+}
+div.dcconDiv div.searchDiv {
+	display: flex;
+	width: 100%;
+	gap: 12px;
+	margin-top: 6px;
+	padding: 0 12px 4px;
+	box-sizing: border-box;
+}
+div.dcconDiv div.searchDiv > div {
+	display: flex;
+	background: #373a3f;
+	border-radius: 8px;
+	padding: 5px 12px;
+	color: #dfe2ea;
+}
+
+div.dcconDiv div.searchDiv > div input {
+	background: none;
+	border: none;
+	font-size: 13px;
+    font-weight: 400;
+    height: 20px;
+	color: #dfe2ea;
+	width: 100%;
+}
+div.dcconDiv div.searchDiv > div input:read-only {
+	color: #a9a9a9;
+}
+
+div.dcconDiv div.searchDiv > div button {
+	padding-left: 4px;
+}
+ul.dcconList {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	
+	gap: 8px;
+	overflow-y: auto;
+	overflow-x: hidden;
+    scrollbar-width: none;
+	padding: 8px 12px 12px;
+}
+ul.dcconList.grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+/*
+@container dccon-window (min-width: 300px) {
+  ul.dcconList:not(.grid) {
+	grid-template-columns: repeat(3, 1fr);
+  }
+}
+@container dccon-window (min-width: 400px) {
+  ul.dcconList:not(.grid) {
+	grid-template-columns: repeat(4, 1fr);
+  }
+}
+@container dccon-window (min-width: 500px) {
+  ul.dcconList:not(.grid) {
+	grid-template-columns: repeat(5, 1fr);
+  }
+}
+@container dccon-window (min-width: 600px) {
+  ul.dcconList:not(.grid) {
+	grid-template-columns: repeat(6, 1fr);
+  }
+}
+@container dccon-window (min-width: 700px) {
+  ul.dcconList:not(.grid) {
+	grid-template-columns: repeat(7, 1fr);
+  }
+}*/
+ul.dcconList.showScroll {
+	scrollbar-width: auto;
+}
+ul.dcconList li {
+	list-style: none;
+	border: solid 1px rgba(0, 0, 0, 0);
+	width: auto;
+	margin: 3px;
+}
+ul.dcconList.grid li {
+	
+}
+ul.dcconList li:hover, ul.dcconList li:focus, ul.dcconList li.autocomplete {
+	border: solid 1px white;
+	box-shadow: 0px 0px 12px 1px #fff, inset 0px 0px 12px 1px #fff;
+}
+ul.dcconList li a {
+	display: block;
+	cursor: pointer;
+}
+ul.dcconList li a:hover {
+	cursor: pointer;
+}
+ul.dcconList li div.keyword, ul.dcconList li div.tag {
+	display: none;
+}
+
+@keyframes rotate {
+	from {
+	  -webkit-transform: rotate(0deg);
+	  -o-transform: rotate(0deg);
+	  transform: rotate(0deg);
+	}
+	to {
+	  -webkit-transform: rotate(360deg);
+	  -o-transform: rotate(360deg);
+	  transform: rotate(360deg);
+	}
+  }
+ul.dcconList img {
+	display: block;
+	width: 100%;
+}
+.live_chatting_message_text__DyleH img.dccon {
+	cursor: pointer;
+}
+.live_chatting_message_text__DyleH img.dccon[alt^="롱파누"] {
+	display: block;
+}
+ul.dcconList img[alt^="볼트공중"], .live_chatting_message_text__DyleH img.dccon[alt^="볼트공중"] {
+    animation-timeline: auto;
+    animation-range-start: normal;
+    animation-range-end: normal;
+    animation: 0.5s linear 0s infinite normal none running rotate;
+}
+ul.dcconList img[alt^="볼트공중"] {
+	width: 90%;
+}
+
+ul.dcconList img[alt^="리썰패배"], .live_chatting_message_text__DyleH img.dccon[alt^="리썰패배"] {
+    animation-timeline: auto;
+    animation-range-start: normal;
+    animation-range-end: normal;
+    animation: 1.5s linear 0s infinite normal none running rotate;
+}
+ul.dcconList img[alt^="리썰패배"] {
+	width: 90%;
+}
+.live_chatting_message_text__DyleH img.dccon.newline {
+	display: block;
+}
+
+button.live_chatting_message_wrapper__xpYre.marquee {
+	width: 100%;
+}
+.live_chatting_message_text__DyleH marquee[direction=up]
+, .live_chatting_message_text__DyleH marquee[direction=down] {
+	min-height: 100px;
+}
+button#dcconBtn.on svg path {
+	stroke: rgba(0,255,163,.7)!important;
+}
+div.copyToast {
+	color: white;
+	text-align: center;
+    position: absolute;
+    left: 36px;
+    right: 36px;
+    top: calc(100% - 137px);
+    z-index: 11;
+    background: #454545;
+    border-radius: 6px;
+    padding: 7px;
+    font-weight: bold;
+    transition: opacity 0.3s ease-out;
+}
+.dccon-fade-out {
+    opacity: 0;
+}
+.tooltip[role=tooltip] {
+	display: block!important;
+}
+.tooltip-inner{white-space: pre-wrap;}
+
+ul.mqAutocomplete {
+	position: absolute;
+    background: rgb(55, 58, 63);
+    color: rgb(223, 226, 234);
+    padding: 4px;
+    font-size: 15px;
+    z-index: 1000;
+	border-radius: 4px;
+}
+
+ul.mqAutocomplete li {
+	padding: 4px;
+	border-radius: 4px;
+}
+
+ul.mqAutocomplete li:focus {
+	background: rgb(100, 104, 114);
+}

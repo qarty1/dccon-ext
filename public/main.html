@@ -1,0 +1,202 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="module" src="main.js"></script>
+		<script src="lib/bootstrap.bundle.min.js"></script>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<style>
+			html, body {
+				background: #141517;
+				min-width:300px;
+			}
+			h4 {
+				color: #c9cedc;	
+				margin-left: 20px;
+			}
+			form {
+				margin-bottom: 0;
+			}
+			label {
+				color: #c9cedc;
+			}
+			.form-check-input {
+				margin-top: 0;
+			}
+			.form-check-input:checked {
+				background-color: #00bd79;
+				border-color: #00bd79;
+			}
+			.form-check-input:focus {
+				border-color: #86fec8;
+				outline: 0;
+				box-shadow: 0 0 0 .25rem rgb(87 253 13 / 25%);
+			}
+			.form-switch .form-check-input:focus {
+				--bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2386fec8'/%3e%3c/svg%3e")
+			}
+			
+			.form-switch .form-check-input:checked {
+				--bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e")
+			}
+			div.form-check {
+				padding: 5px 25px;
+				display: flex;
+				align-items: center;
+			}
+			form > div.form-check:first-child {
+				padding: 5px 20px;
+				background: #2e3033;
+				margin: 5px;
+				border-radius: 12px;
+			}
+			div.form-switch input {
+				margin-left: auto!important;
+			}
+			.form-check {
+				padding-left: 0;
+			}
+			.footer {
+				border-top: rgba(255, 255, 255, .12);
+				padding: 12px;
+				text-align: center;
+				color: #fff;
+				font-size: 14px;
+			}
+			legend {
+				color: #c9cedc;
+				font-size: inherit;
+				padding: 5px 25px;
+				margin-bottom: 0;
+			}
+			.radio-group {
+				margin-bottom: 12px;
+			}
+			.radio-group > div {
+				margin: 0 25px;
+				border-top: solid 1px #c9cedc;
+				border-bottom: solid 1px #c9cedc;
+			}
+			.radio-group div.form-switch {
+				padding: 5px 0;
+				;
+			}
+			.radio-group div.form-switch label {
+				padding-left: 1rem;
+			}
+			div.disabled, div.disabled input, div.disabled label{
+				cursor: default;
+				opacity: .5;
+			}
+			.modal {
+				padding-right: 0px !important;
+			}
+			body.modal-open {
+				overflow: auto;
+			}
+
+			body.modal-open[style] {
+				padding-right: 0px !important;
+			}
+		</style>
+	</head>
+	<body>
+		<form class="d-flex flex-column">
+			<div class="form-check form-switch header-row" style="background: #2e3033">
+				<label class="form-check-label flex-grow-1" for="dcconActive">디시콘 선택기 사용</label>
+				<input class="form-check-input float-none" type="checkbox" role="switch" id="dcconActive">
+			</div>
+			<div class="d-flex flex-column">
+
+				<div class="form-check" style="color: white;padding: 12px 25px 4px;">
+					<label class="form-check-label flex-grow-1" for="dcconWindowWidth">사용자 설정 너비</label>
+				</div>
+				<div class="input-group form-check" style="padding: 0 25px;">
+					<input type="text" class="form-control form-control-sm"  id="dcconWindowWidth">
+					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="setDcconWindowWidth">설정</button>
+					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="initDcconWindowWidth">초기화</button>
+				</div>
+				
+				<div class="form-check form-switch" style="color: white;padding: 12px 25px 4px;">
+					<label class="form-check-label flex-grow-1" for="typeFixed">디시콘 열 수 고정(선택기)</label>
+					<input class="form-check-input float-none" type="checkbox" name="dcconColumnFixed" role="switch" id="typeFixed" value="1"/>
+				</div>
+				<div class="input-group form-check dcconCountForm" style="padding: 0 25px 12px;">
+					<input type="text" class="form-control form-control-sm" id="dcconColumnCount">
+					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="setDcconColumnCount">설정</button>
+					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="initDcconColumnCount">초기화</button>
+				</div>
+				<!--<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="imageAction">디시콘 바로 복사 사용</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="imageAction">
+				</div>-->
+				<div class="radio-group">
+					<legend>디시콘 클릭 동작</legend>
+					<div class="d-flex flex-column">
+						<div class="form-check form-switch">
+							<label class="form-check-label flex-grow-1" for="copy">복사</label>
+							<input type="radio" class="form-check-input float-none" name="imageAction" id="copy" value="0">
+						</div>
+						<div class="form-check form-switch">
+							<label class="form-check-label flex-grow-1" for="copyInput">복사 &amp; 입력</label>
+							<input class="form-check-input float-none" type="radio" name="imageAction" role="switch" id="copyInput" value="1">
+						</div>
+						<div class="form-check form-switch">
+							<label class="form-check-label flex-grow-1" for="copySend">복사 &amp; 전송</label>
+							<input class="form-check-input float-none" type="radio" name="imageAction" role="switch" id="copySend" value="2">
+						</div>
+					</div>
+				</div>
+			
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1">상호작용 키</label>
+					<button class="btn btn-sm btn-success" id="actionKey" style="background: #00bd79">Tab</button>
+				</div>
+
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="chatToDccon">채팅 디시콘 전환 사용</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="chatToDccon">
+				</div>
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="showCopyToast">복사 알림창 표시</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="showCopyToast">
+				</div>
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="dcconNewline">디시콘을 다음줄에 표시</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="dcconNewline">
+				</div>
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="showScrollbar">디시콘 스크롤바 표시</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="showScrollbar">
+				</div>
+				
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="iconttvCompatibility">iconttv 호환 모드</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="iconttvCompatibility">
+				</div>
+
+				<div class="form-check form-switch">
+					<label class="form-check-label flex-grow-1" for="useTagConverter">채팅 태그 변환</label>
+					<input class="form-check-input float-none" type="checkbox" role="switch" id="useTagConverter">
+				</div>
+			</div>
+		</form>
+
+		<div class="footer">
+			<div>디시콘 선택기 for 치지직</div>
+			<div>버전 1.0.8</div>
+		</div>
+
+		<div class="modal fade" id="detectKeydown" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-sm">
+			  <div class="modal-content">
+				<div class="modal-body">
+				  변경하실 키를 눌러주세요
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">취소</button>
+				</div>
+			  </div>
+			</div>
+		  </div>
+	</body>
+</html>

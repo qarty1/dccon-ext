@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "디시콘 선택기 for 치지직",
+  "description": "치지직을 위한 디시콘 선택기입니다.",
+  "version": "1.0.8",
+  "icons": {
+    "16": "icons/icon_dccon_16.png",
+    "32": "icons/icon_dccon_32.png",
+    "48": "icons/icon_dccon_48.png",
+    "128": "icons/icon_dccon_128.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "main.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.chzzk.naver.com/*"],
+      "js": ["common/dccon.js", "lib/jquery-3.7.1.min.js", "lib/jquery.quicksearch.min.js", "lib/clipboard.min.js", "lib/bootstrap.bundle.min.js", "content-script.js"],
+      "css": ["css/dccon.css", "css/bootstrap.min.css"]
+    }
+  ],
+  "browser_specific_settings": {
+  "gecko": {
+    "id": "qarty11@gmail.com",
+    "strict_min_version": "58.0"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+		    "images/*",
+        "css/*",
+        "icons/*",
+        "lib/*",
+        "common/*",
+        "content-main.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
