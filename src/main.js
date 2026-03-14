@@ -30,6 +30,7 @@ document.getElementById("dcconActive").addEventListener("change", (e) => {
         });*/
         document.getElementById('dcconColumnCount').removeAttribute("disabled");
         document.getElementById('actionKey').removeAttribute("disabled");
+        document.getElementById('dcconChangeCount').removeAttribute("disabled");
 
       } else {
         node.parentNode.nextElementSibling.classList.add("disabled");
@@ -49,6 +50,7 @@ document.getElementById("dcconActive").addEventListener("change", (e) => {
         });*/
         document.getElementById('dcconColumnCount').setAttribute("disabled", true);
         document.getElementById('actionKey').setAttribute("disabled", true);
+        document.getElementById('dcconChangeCount').removeAttribute("disabled", true);
       }
     }
   });
@@ -136,7 +138,7 @@ document.getElementById("setDcconColumnCount").addEventListener("click", async (
     alert("숫자만 입력해주세요.");
     return;
   }
-  if(dcconColumnCount < 1) {
+  if(parseInt(count) < 1) {
     alert("1 이상으로 입력해주세요.");
     return;
   }
@@ -150,6 +152,7 @@ document.getElementById("initDcconColumnCount").addEventListener("click", async 
   document.getElementById("dcconColumnCount").value = "3";
   console.log(`설정 여부 : ${success}`);
 });
+
 document.getElementById("actionKey").addEventListener("click", (e) => {
   e.preventDefault();
   keydownListener = async function(event) {
@@ -159,6 +162,27 @@ document.getElementById("actionKey").addEventListener("click", (e) => {
     keydownModal.hide();
   }
   keydownModal.show();
+});
+
+document.getElementById("setDcconChangeCount").addEventListener("click", async (e) => {
+  let count = document.getElementById("dcconChangeCount").value;
+  if(isNaN(parseInt(count))) {
+    alert("숫자만 입력해주세요.");
+    return;
+  }
+  if(parseInt(count) < 1) {
+    alert("1 이상으로 입력해주세요.");
+    return;
+  }
+  
+  let success = await PreferencesHandler.setDcconChangeCount(count);
+  console.log(`설정 여부 : ${success}`);
+});
+
+document.getElementById("initDcconChangeCount").addEventListener("click", async (e) => {
+  let success = await PreferencesHandler.setDcconChangeCount("2");
+  document.getElementById("dcconChangeCount").value = "2";
+  console.log(`설정 여부 : ${success}`);
 });
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -174,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const dcconColumnFixedCheckBox = document.getElementById('typeFixed');
   const dcconColumnCountText = document.getElementById('dcconColumnCount');
   const actionKeyButton = document.getElementById('actionKey');
+  const dcconChangeCountText = document.getElementById('dcconChangeCount');
 
   const dcconActiveState = await PreferencesHandler.getDcconActive();
   const imageActionState = await PreferencesHandler.getImageAction();
@@ -187,6 +212,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const dcconColumnFixed = await PreferencesHandler.getDcconColumnFixed();
   const dcconColumnCount = await PreferencesHandler.getDcconColumnCount();
   const actionKey = await PreferencesHandler.getActionKey();
+  const dcconChangeCount = await PreferencesHandler.getDcconChangeCount();
 
   dcconActiveCheckbox.checked = dcconActiveState;
   imageActionCheckbox.forEach(e => {
@@ -206,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   iconttvCompatibilityCheckbox.checked = iconttvCompatibilityState;
   useTagConverterCheckBox.checked = useTagConverterState;
   dcconColumnFixedCheckBox.checked = dcconColumnFixed;
-
+  dcconChangeCountText.value = dcconChangeCount;
   /*(e => {
     if(e.value == dcconColumnType) {
       e.checked = true;
@@ -285,3 +311,26 @@ keydownEventModal.addEventListener('hide.bs.modal', event => {
 keydownEventModal.addEventListener('shown.bs.modal', event => {
   document.addEventListener("keydown", keydownListener);
 });
+
+/*
+function test() {
+
+        var fileText = "Your content which you want to save in file";   //파일에 저장될 본문
+ 
+        var fileBlob = new Blob([fileText], {   //가상의 파일시스템
+            type: 'text/plain'
+        });
+        var fileUrl = URL.createObjectURL(fileBlob);    //다운로드 가능한 url 생성
+        var fileName = 'mytextfile.txt';    //저장될 파일명, 경로. 크롬에 설정된 다운로드 경로에 저장
+ 
+        var fileOptions = {
+            filename: fileName,
+            url: fileUrl,
+            saveAs: false
+        };
+        //fileOptions.saveAs = true;    //저장 시 다운로드 창(어디에 다운할지 정하는 대화창) 띄우기
+        //console.log(browser.downloads);
+        browser.downloads.download(fileOptions);
+    // 필요 시 URL 해제// 10초 후 해제
+	; //크롬 다운로드 api
+}*/

@@ -1,4 +1,4 @@
-import { chzzkDOM } from "../modules/chzzk-dom-controller";
+import { chzzkDOM } from "../modules/cime-dom-controller";
 
 export class DcconBtnObserver {
     constructor(dcconState) {

@@ -1,4 +1,5 @@
-import { chzzkDOM, DOMMessageHandler } from "../modules/chzzk-dom-controller";
+import { chzzkDOM, DOMMessageHandler } from "../modules/cime-dom-controller";
+import PreferencesHandler from "../modules/preferences-handler";
 var browser = require("webextension-polyfill");
 
 export class DcconMqObserver {
@@ -38,7 +39,7 @@ d
     constructor() {
         /*window.addEventListener("click", (event) => {
             this.remove();
-        });*/
+        });*/;
     }
 
     keydown(event) {
@@ -326,17 +327,43 @@ d
             // 우선 디시콘을 변환해봄
             dcconChanged = this.changeDccon(chatText);
             // 변환된 디시콘이 있는 경우 mq태그 제거
-            if(dcconChanged) {
+            /*if(dcconChanged) {
                 Array.from(chatText.childNodes).forEach(child => {
                     if (child.nodeType === Node.TEXT_NODE) {
                         child.textContent = child.textContent.replace(this.mqPrefixExp, '').replace(this.mqSuffixExp, '');
                     }
                 });
-            }
+            }*/
+        }
+
+        if(chatText != undefined) {
+
+            Array.from(chatText.childNodes).forEach(child => {
+                if (child.nodeType === Node.TEXT_NODE) {
+                    let escaped = child.textContent.replaceAll("<", "&lt;").replace(">", "&gt;");
+
+                    let changedMq = escaped.replace(this.mqRegExp, this.replaceMarquee);
+
+                    if(changedMq != null) {
+                        changedMq = this.replaceTag(changedMq);
+                    }
+
+                    const tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = changedMq;
+
+                    const parent = child.parentNode;
+                    const fragment = document.createDocumentFragment();
+                    fragment.appendChild(tempDiv.firstChild);
+                    while (tempDiv.firstChild) {
+                        fragment.appendChild(tempDiv.firstChild);
+                    }
+                    parent.replaceChild(fragment, child);
+                }
+            });
         }
         
         // 디시콘 변환을 사용하지 않거나, 변환된 디시콘이 없으면서 채팅변환을 사용하는경우
-        if((!chatToDccon || !dcconChanged) && useTagConverter) {
+        /*if((!chatToDccon || !dcconChanged) && useTagConverter) {
             if(chatText != undefined) {
                 let text = chatText.innerHTML;
                 
@@ -350,7 +377,7 @@ d
                     }
                 }
             }
-        }
+        }*/
     }
 
     replaceTag(text) {
@@ -378,8 +405,8 @@ d
 		text = text.replace(/\[ㄴ\](.*)/g, "<del>$1</del>"); //취소선 [s]blah
 
 		//강제개행
-		text = text.replace(/\[br\]/g, "<br />");
-        text = text.replace(/\[ㅠㄱ\]/g, "<br />");
+		text = text.replace(/\[br\]/g, "<br/>");
+        text = text.replace(/\[ㅠㄱ\]/g, "<br/>");
         return text;
     }
     /**
@@ -420,7 +447,7 @@ d
         if (body.match(/<img/) != null) return body;
 
 		// 마퀴태그 만들어 반환
-		return '<marquee' + direction + behavior + loop + scrollamount + scrolldelay + '>' + body + '</marquee>';
+		return '<div class=\'dccon-marquee\'><marquee' + direction + behavior + loop + scrollamount + scrolldelay + '>' + body + '</marquee></div>';
 	}
 
     changeDccon(chatTarget) {
@@ -434,7 +461,6 @@ d
             return changeFlag;
         }
         const $chatSpan = $(chatTarget);
-    
         if($chatSpan.get(0) != undefined) {
             Array.from($chatSpan.get(0).childNodes).forEach(child => {
                 if (child.nodeType === Node.TEXT_NODE) {
@@ -442,6 +468,7 @@ d
                 }
             });
         }
+        console.log(changeFlag);
         return changeFlag;
     }
 
@@ -453,13 +480,13 @@ d
         .attr("alt", dcCon.keywords[0])
         .attr("title", `${dcCon.keywords.join(",")}\r\n태그 : ${dcCon.tags.join(",")}`)
         .attr("data-bs-toggle", "tooltip")
-        .attr("data-bs-placement", "top")
-        .css({"width": "99px", "height": "99px"});
-        
-        if(dcconNewline) {
-            $img.addClass("newline");
+        .attr("data-bs-placement", "top");
+        if(dcCon.doubleCon) {
+            $img.css({"width": "199px", "height": "99px"});
+        } else {
+            $img.css({"width": "99px", "height": "99px"});
         }
-    
+        
         $img.get(0).addEventListener("click", function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -477,12 +504,18 @@ d
     
         let lastIndex = 0;
         let newNodes = [];
+        // 1.1.0 더블디시콘 지원으로 2개 변환으로 변경
         // 한개만 변환함
-        matches = matches.splice(0, 1);
+        // matches = matches.splice(0, 1);
+
+        if(parseInt(window.dcconChangeCount)) {
+            matches = matches.splice(0, window.dcconChangeCount);
+        }
 
         matches.forEach(match => {
             // 텍스트 노드 추가
             const con = dcConsData.find((dccon) => {
+                let doubleConPlus = dccon.doubleConPlus;
                 let keywords = dccon.keywords;
                 let exist = false;
                 keywords.forEach((keyword) => {
@@ -490,20 +523,32 @@ d
                         exist = true;
                     }
                 });
-                return exist;
+                return exist && !doubleConPlus;
             });
             
             if (match.index > lastIndex) {
                 newNodes.push(document.createTextNode(node.textContent.slice(lastIndex, match.index)));
             }
-            // 이미지 노드 추가
-            
+
+            // 추가될 노드가 이미지이면
             if(con != undefined) {
+                // 디시콘 다음줄에 표시 옵션 사용시 첫 노드가 디시콘이면 노드 추가 전에 br노드를 추가하여 다음줄 표시 구현
+                if(dcconNewline) {
+                    const existDccon = newNodes.find(nodes => {
+                        return nodes.tagName === "IMG";
+                    });
+                    const lastNode = newNodes.length > 0 ? newNodes[newNodes.length-1] : null;
+
+                    if(lastNode == null) {
+                        newNodes.push(document.createElement("br"));
+                    }
+
+                }
                 newNodes.push(this.createImageElement(con));
                 changed = true;
             } else {
                 newNodes.push(document.createTextNode(match[0]));
-                changed = false;
+                //changed = false;
             }
             
             lastIndex = match.index + match[0].length;
@@ -513,7 +558,11 @@ d
         if (lastIndex < node.textContent.length) {
             newNodes.push(document.createTextNode(node.textContent.slice(lastIndex)));
         }
-    
+
+        if(!changed) {
+            return false;
+        }
+        
         newNodes.forEach(newNode => node.parentNode.insertBefore(newNode, node));
         node.parentNode.removeChild(node);
     

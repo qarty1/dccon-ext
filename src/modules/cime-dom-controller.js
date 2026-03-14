@@ -2,18 +2,18 @@ var browser = require("webextension-polyfill");
 
 const chzzkDOM = { 
     layoutBody: 'layout-body',
-    chatContainer: 'live_chatting_container__SvtrD',
-    chatItemContainer: 'live_chatting_list_item__0SGhw',
-    chatItemWrapper: 'live_chatting_list_wrapper__a5XTV',
-    chatText: 'live_chatting_message_text__DyleH',
+    chatContainer: 'scroll_wrapper__74953ad1',
+    chatItemContainer: 'item__74953ad1',
+    chatItemWrapper: 'message_list_view__74953ad1',
+    chatText: 'text__74953ad1',
     chatTextWrapper: 'live_chatting_message_wrapper__xpYre',
-    chatActionArea: 'live_chatting_area__hUPJw',
-    inputContainer: 'live_chatting_input_container__qA0ad',
-    chatInput: 'live_chatting_input_input__2F3Et',
-    chatInputInActiveTag: 'textarea',
-    chatInputActiveTag: 'pre',
-    chatActionButton: 'live_chatting_input_input_button__sjwrf',
-    chatSendButton: 'live_chatting_input_send_button__8KBrn',
+    chatActionArea: 'stream_editor__74953ad1',
+    inputContainer: 'chat_container__9f2e591a',
+    chatInput: 'stream_editor_chat_editor__9f2e591a',
+    chatInputInActiveTag: 'p',
+    chatInputActiveTag: 'div',
+    chatActionButton: 'chat_emoticon_button__f4ac3f5a',
+    chatSendButton: 'editor_send__9f2e591a',
     liveContainer: 'live_container__Ccraj'
 };
 const domMessage = {
@@ -65,7 +65,7 @@ class ChzzkDOMController {
     }
 
     checkInputActive() {
-        if(document.querySelectorAll(`${chzzkDOM.chatInputActiveTag}.${chzzkDOM.chatInput}`)[0] != undefined) {
+        if(document.querySelectorAll(`${chzzkDOM.chatInputActiveTag} ${chzzkDOM.chatInputInActiveTag}`)[0] == undefined) {
             return true;
         } else {
             return false;
@@ -143,7 +143,7 @@ class ChzzkDOMController {
             });
         }
         return new Promise((resolve, reject) => {
-            const chatInputActiveObserver = new MutationObserver((mutationsList, observer) => {
+            /*const chatInputActiveObserver = new MutationObserver((mutationsList, observer) => {
                 for (const mutation of mutationsList) {
                     mutation.addedNodes.forEach((node) => {
                         
@@ -156,12 +156,14 @@ class ChzzkDOMController {
                 }
             });
             const config = { childList: true, subtree: true };
-            chatInputActiveObserver.observe(this.inputContainer, config);
-            this.input.dispatchEvent(new FocusEvent("focusin", {bubbles: true, composed: true}));
+            chatInputActiveObserver.observe(this.inputContainer, config);*/
+            this.input.dispatchEvent(new FocusEvent("focus", {bubbles: true, composed: true}));
+            this.update(true);
+            resolve(true);
         });
     }
     inputChat(text, add = true, trigInput = true, pos = undefined) {
-
+        console.log(`caretpos : ${pos}`);
         if(!this.isInit) {
             console.log("ChatInputController not initialized.");
             return;
@@ -238,7 +240,7 @@ class ChzzkDOMController {
             const config = { childList: true, subtree: true };
             chatInputInActiveObserver.observe(this.inputContainer, config);*/
             this.input.dispatchEvent(new InputEvent('input', {bubbles: true,cancelable: true, inputType: 'insertText',  data: '\n',}));
-            this.input.dispatchEvent(new KeyboardEvent("keypress", {bubbles: true, composed: true, keyCode: 13}));
+            this.input.dispatchEvent(new KeyboardEvent("keydown", {bubbles: true, composed: true, key: 'Enter'}));
             this.input.innerText = "";
             resolve(true);
         });

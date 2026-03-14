@@ -144,13 +144,16 @@ ul.dcconList img {
 	display: block;
 	width: 100%;
 }
-.live_chatting_message_text__DyleH img.dccon {
+ul.dcconList img.doubleConPlus {
+	display: inline;
+	width: 50%;
+}
+img.dccon {
 	cursor: pointer;
+	margin: 0px;
 }
-.live_chatting_message_text__DyleH img.dccon[alt^="롱파누"] {
-	display: block;
-}
-ul.dcconList img[alt^="볼트공중"], .live_chatting_message_text__DyleH img.dccon[alt^="볼트공중"] {
+
+ul.dcconList img[alt^="볼트공중"], img.dccon[alt^="볼트공중"] {
     animation-timeline: auto;
     animation-range-start: normal;
     animation-range-end: normal;
@@ -160,7 +163,7 @@ ul.dcconList img[alt^="볼트공중"] {
 	width: 90%;
 }
 
-ul.dcconList img[alt^="리썰패배"], .live_chatting_message_text__DyleH img.dccon[alt^="리썰패배"] {
+ul.dcconList img[alt^="리썰패배"], img.dccon[alt^="리썰패배"] {
     animation-timeline: auto;
     animation-range-start: normal;
     animation-range-end: normal;
@@ -169,16 +172,16 @@ ul.dcconList img[alt^="리썰패배"], .live_chatting_message_text__DyleH img.dc
 ul.dcconList img[alt^="리썰패배"] {
 	width: 90%;
 }
-.live_chatting_message_text__DyleH img.dccon.newline {
+img.dccon.newline {
 	display: block;
 }
 
-button.live_chatting_message_wrapper__xpYre.marquee {
+button.marquee {
 	width: 100%;
 }
-.live_chatting_message_text__DyleH marquee[direction=up]
-, .live_chatting_message_text__DyleH marquee[direction=down] {
-	min-height: 100px;
+marquee[direction=up]
+,marquee[direction=down] {
+	height: 100px;
 }
 button#dcconBtn.on svg path {
 	stroke: rgba(0,255,163,.7)!important;
@@ -222,4 +225,10 @@ ul.mqAutocomplete li {
 
 ul.mqAutocomplete li:focus {
 	background: rgb(100, 104, 114);
+}
+div.dccon-marquee {
+	vertical-align: top;
+}
+div.dccon-marquee marquee{
+	vertical-align: top;
 }

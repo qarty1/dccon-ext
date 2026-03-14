@@ -1,4 +1,4 @@
-import { chzzkDOM, DOMMessageHandler } from "../modules/chzzk-dom-controller";
+import { chzzkDOM, DOMMessageHandler } from "../modules/cime-dom-controller";
 import PreferencesHandler from "../modules/preferences-handler";
 var browser = require("webextension-polyfill");
 
@@ -65,9 +65,23 @@ export class DcconWindowObserver {
 				</div>
 			`
 		);
+		const $doubleConDiv = $("<div>").addClass("searchDiv");
+		$doubleConDiv.html(
+			`
+			<strong>더블콘 프리셋</strong>
+			<div style="display: flex;flex-direction: row">
+				<input type="text" id="double-con1" placeholder="디시콘1"/>
+			</div>
+			<div style="display: flex;flex-direction: row">
+				<input type="text" id="double-con1" placeholder="더블콘2"/>
+			</div>
+			`
+		);
+		
 		
 		div.append($searchDiv);
 		div.append($pasteDiv);
+		//div.append($doubleConDiv);
 		
 		const ul = $("<ul>").addClass("dcconList");
 		
@@ -95,34 +109,54 @@ export class DcconWindowObserver {
 			var li = document.createElement("li");
 			var a = document.createElement("a");
 			
-			var img = document.createElement("img");
-			
-			img.src = browser.runtime.getURL(dcCon.uri);
-			img.className = "lazy";
-			img.setAttribute("alt", dcCon.keywords[0]);
-			
+			if(Array.isArray(dcCon.uri)) {
+				
+				dcCon.uri.forEach(uri => {
+					var img = document.createElement("img");
+				
+					img.src = browser.runtime.getURL(uri);
+					img.classList = "lazy doubleConPlus";
+					img.setAttribute("alt", dcCon.keywords[0]);
+					
+					a.appendChild(img);
+				})
+				
+				li.appendChild(a);
+			} else {
+				var img = document.createElement("img");
+				
+				img.src = browser.runtime.getURL(dcCon.uri);
+				img.className = "lazy";
+				img.setAttribute("alt", dcCon.keywords[0]);
 
-			a.appendChild(img);
-			li.appendChild(a);
+				a.appendChild(img);
+				li.appendChild(a);
+			}
 			
 			var keywords = dcCon.keywords;
 			var tags = dcCon.tags;
-			
+			var replaceKeyword = dcCon.replaceKeyword;
+
+			const targetKeyword = replaceKeyword ? replaceKeyword : keywords[0];
+
 			keywords.forEach((keyword) => {
+				//$(li).append($("<div>").addClass("keyword").text(keyword));
 				$(li).append($("<div>").addClass("keyword").text(keyword));
 			});
+
 			tags.forEach((tag) => $(li).append($("<div>").addClass("tag").text(tag)));
 			
 			$(li).attr("data-bs-toggle", "tooltip");
 			$(li).attr("title", `${keywords.join(",")}\r\n태그 : ${tags.join(",")}`);
 			$(li).attr("data-bs-placement", "top");
+			
 
 			(function(keyword) { $(li).click(function(e) {
 				e.preventDefault();
 				$("#dcconPaste").val("~"+keyword);
 				DOMMessageHandler.handleDcconClick("~"+keyword);
 			});
-			})(keywords[0]);
+			})(targetKeyword);
 			
 			ul.get(0).appendChild(li);
 		}
@@ -166,7 +200,7 @@ export class DcconWindowObserver {
 			
 			new ClipboardJS(".pasteCon").on('success', function(e) {
 				if(window.showCopyToast) {
-					showToast(e.text);
+					showCopyToast(e.text);
 				}
 			});
 		} else {

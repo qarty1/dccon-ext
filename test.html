@@ -1,0 +1,30 @@
+<pre id="editable" contenteditable="true"></pre>
+<div id="dummy-container"></div>
+
+<script>
+  const editable = document.getElementById("editable");
+  const dummyContainer = document.getElementById("dummy-container");
+
+  editable.addEventListener("input", () => {
+    const currentText = editable.textContent;
+
+    // 마지막으로 등장한 ~의 위치
+    const tildeIndex = currentText.lastIndexOf("~");
+
+    // dummy div 생성 또는 재사용
+    let dummy = document.getElementById("dummy");
+    if (!dummy) {
+      dummy = document.createElement("div");
+      dummy.id = "dummy";
+      dummyContainer.appendChild(dummy);
+    }
+
+    if (tildeIndex !== -1) {
+      const afterTilde = currentText.slice(tildeIndex + 1);
+      dummy.textContent = afterTilde;
+    } else {
+      // ~가 제거되면 dummy는 초기화 (또는 숨김 등 처리 가능)
+      dummy.textContent = "";
+    }
+  });
+</script>

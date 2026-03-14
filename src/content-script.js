@@ -1,14 +1,18 @@
 import PreferencesHandler from "./modules/preferences-handler.js";
 import {ObservableState as State} from "./modules/observable-state.js"
-import {ChzzkDOMController, domMessage, chzzkDOM} from "./modules/chzzk-dom-controller.js";
+import {ChzzkDOMController, domMessage, chzzkDOM} from "./modules/cime-dom-controller.js";
 import { DcconBtnObserver } from "./observer/dccon-button-observer.js";
 import { DcconWindowObserver } from "./observer/dccon-window-observer.js";
 import { DcconChatWindowObserver } from "./observer/dccon-chat-window-observer.js";
 import { DcconMqObserver } from "./observer/dccon-mq-observer.js";
 
-const enableDcconKey = [
+/*const enableDcconKey = [
 	"7d4157ae4fddab134243704cab847f23",
 	"df41352562ee012a0b43831fd675775f"
+];*/
+
+const enableDcconKey = [
+	"funzinnu"
 ];
 
 var browser = require("webextension-polyfill");
@@ -43,6 +47,7 @@ const useTagConverter = await PreferencesHandler.getUseTagConverter();
 const dcconColumnFixed = await PreferencesHandler.getDcconColumnFixed(); 
 const dcconColumnCount = await PreferencesHandler.getDcconColumnCount();
 const actionKey = await PreferencesHandler.getActionKey();
+const dcconChangeCount = await PreferencesHandler.getDcconChangeCount();
 
 window.dcconActive = dcconActive;
 window.imageAction = imageAction;
@@ -56,6 +61,7 @@ window.useTagConverter = useTagConverter;
 window.dcconColumnFixed = dcconColumnFixed;
 window.dcconColumnCount = dcconColumnCount;
 window.actionKey = actionKey;
+window.dcconChangeCount = dcconChangeCount;
 
 var dcconState = new State();
 var dcconChatState = new State();
@@ -71,6 +77,18 @@ var frameObserver = new MutationObserver((mutationsList) => {
 	for (const mutation of mutationsList) {
 
 		mutation.removedNodes.forEach((node) => {
+			
+			if(node.nodeType === Node.ELEMENT_NODE && node.tagName === 'ASIDE') {
+				if(node.classList.contains(chzzkDOM.chatContainer)) {
+					
+					$(`.${chzzkDOM.chatActionArea}`).find(`.${chzzkDOM.inputContainer}`).remove("#dcconBtn");
+					dcconState.unsubscribe(btnObserver);
+					dcconState.unsubscribe(windowObserver);
+					dcconChatState.unsubscribe(chatWindowObserver);
+					inputState.unsubscribe(chzzkDOMController);
+				}
+			}
+
 			if(node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SECTION') {
 				if(node.classList.contains(chzzkDOM.liveContainer)) {
 					
@@ -82,22 +100,23 @@ var frameObserver = new MutationObserver((mutationsList) => {
 				}
 			}
 			if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV')  {
-				if (node.classList.contains(chzzkDOM.chatActionArea)) {
+				/*if (node.classList.contains(chzzkDOM.chatActionArea)) {
 					$(`.${chzzkDOM.chatActionArea}`).find(`.${chzzkDOM.inputContainer}`).remove("#dcconBtn");
 					dcconState.unsubscribe(btnObserver);
 					dcconState.unsubscribe(windowObserver);
 					dcconChatState.unsubscribe(chatWindowObserver);
 					inputState.unsubscribe(chzzkDOMController);
-				}
+				}*/
 				if (node.classList.contains('dcconDiv')) {
 					$(".tooltip").remove();
 				}
 			}
 		});
 
-		mutation.addedNodes.forEach((node) => {
+		/*mutation.addedNodes.forEach((node) => {
 			if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV')  {
 				if (node.classList.contains(chzzkDOM.chatActionArea)) {
+					console.log(node);
 					const loc = window.location.href;
 					let enableFlag = false;
 					enableDcconKey.forEach(element => {
@@ -157,13 +176,14 @@ var frameObserver = new MutationObserver((mutationsList) => {
 					$('.tooltip').remove();
 				}
 			}
-		});
+		});*/
 	}
 });
 var chatObserver = new MutationObserver((mutationsList) => {
 	for (const mutation of mutationsList) {
-
+		
 		mutation.addedNodes.forEach((node) => {
+			console.log(node);
 			if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV')  {
 				if(node.classList.contains(chzzkDOM.chatItemContainer)) {
 					if($(node).find(`.${chzzkDOM.chatText}`).find("img").length == 0) {
@@ -240,16 +260,41 @@ $(function() {
 		dcconState.setState(false);
 	});
 
-	$(document).on("input", `.${chzzkDOM.chatInput}`, function(e) {		
 
-		if(chzzkDOMController.getTextRangeAroundCaret() === '~') {
+	$(document).on("beforeinput", `.${chzzkDOM.chatInput}`, function(e) {
+		if (e.originalEvent.inputType === 'deleteContentBackward') {
+			const selection = window.getSelection();
+			if (selection.rangeCount > 0) {
+				const range = selection.getRangeAt(0);
+				const newRange = range.cloneRange();
+
+				// 커서 앞 문자 1글자만 포함하도록 Range 확장
+				if (newRange.startOffset > 0) {
+					newRange.setStart(newRange.startContainer, newRange.startOffset - 1);
+					const deletedText = newRange.toString();
+					if(deletedText === "~") {
+						dcconChatState.setState(false);
+					}
+				}
+			}
+		} else if (e.originalEvent.inputType.startsWith('delete')) {
+			const selection = window.getSelection();
+			if (selection.rangeCount > 0) {
+				const range = selection.getRangeAt(0);
+				const deletedText = range.toString();
+			}
+		}
+	});
+
+	$(document).on("input", `.${chzzkDOM.chatInput}`, function(e) {		
+		//if(chzzkDOMController.getTextRangeAroundCaret() === '~') {
+		if(e.originalEvent.data === '~' && e.originalEvent.inputType === 'insertText') {
+			dcconChatState.setState(false);
 			if(dcconChatState.getState() == false) {
 				dcconChatState.setState(true);
 				dcconState.setState(false);
 			}
-		}
-		if(chzzkDOMController.getTextRangeAroundCaret().trim() === '') {
-			dcconChatState.setState(false);
+			
 		}
 	});
 
@@ -259,6 +304,40 @@ $(function() {
 			handleDcconClick($(this).attr("alt"));
 		});
 	}
+
+	dcconState.subscribe(btnObserver);
+	dcconState.subscribe(windowObserver);
+	dcconChatState.subscribe(chatWindowObserver);
+	inputState.subscribe(chzzkDOMController);
+	const chatTargetNode = document.getElementsByClassName(chzzkDOM.chatItemWrapper)[0];
+	chatObserver.observe(chatTargetNode, observerConfig);
+
+
+	inputState.setState(true);
+	$(`.${chzzkDOM.chatInput}`).on("keydown", (e) => {
+		
+		if(e.originalEvent.key == 'Enter' || e.originalEvent.key == 'Escape') {
+			dcconState.setState(false);
+			dcconChatState.setState(false);
+		}
+
+		if(e.key == actionKey) {
+			if(dcconChatState.getState()) {
+				e.preventDefault();
+				e.stopPropagation();
+				$("ul.dcconList li:visible").eq(0).focus();
+			}
+		}
+		dcconMqObserver.keydown(e);
+	});
+	$(`.${chzzkDOM.chatInput}`).on("input", (e) => {
+		dcconMqObserver.input(e);
+	});
+	document.querySelectorAll(`.${chzzkDOM.chatItemContainer}`).forEach(chatNode => {
+		if($(chatNode).find(`.${chzzkDOM.chatText}`).find("img").length == 0) {
+			dcconMqObserver.handleChatting(chatNode);
+		}
+	});
 });
 const observerConfig = { childList: true, subtree: true };
 
@@ -279,11 +358,11 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
 	if (message.msg === domMessage.INPUT_CHAT) {
-		const {text, addFlag, trigInput} = message.data;
+		const {text, addFlag, trigInput, pos} = message.data;
 		(async () => {
 			let active = await chzzkDOMController.activeChat();
 			if(active) {
-				chzzkDOMController.inputChat(text, addFlag, trigInput);
+				chzzkDOMController.inputChat(text, addFlag, trigInput, pos);
 				dcconChatState.setState(false);
 			};
 		})();

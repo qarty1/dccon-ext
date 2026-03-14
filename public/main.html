@@ -120,10 +120,19 @@
 					<label class="form-check-label flex-grow-1" for="typeFixed">디시콘 열 수 고정(선택기)</label>
 					<input class="form-check-input float-none" type="checkbox" name="dcconColumnFixed" role="switch" id="typeFixed" value="1"/>
 				</div>
-				<div class="input-group form-check dcconCountForm" style="padding: 0 25px 12px;">
+				<div class="input-group form-check dcconCountForm" style="padding: 0 25px">
 					<input type="text" class="form-control form-control-sm" id="dcconColumnCount">
 					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="setDcconColumnCount">설정</button>
 					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="initDcconColumnCount">초기화</button>
+				</div>
+				
+				<div class="form-check" style="color: white;padding: 12px 25px 4px;">
+					<label class="form-check-label flex-grow-1" for="dcconChangeCount">채팅 디시콘 변환 갯수</label>
+				</div>
+				<div class="input-group form-check" style="padding: 0 25px 12px;">
+					<input type="text" class="form-control form-control-sm"  id="dcconChangeCount">
+					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="setDcconChangeCount">설정</button>
+					<button class="btn btn-outline-success btn-sm" style="color: #00bd79" type="button" id="initDcconChangeCount">초기화</button>
 				</div>
 				<!--<div class="form-check form-switch">
 					<label class="form-check-label flex-grow-1" for="imageAction">디시콘 바로 복사 사용</label>
@@ -156,6 +165,7 @@
 					<label class="form-check-label flex-grow-1" for="chatToDccon">채팅 디시콘 전환 사용</label>
 					<input class="form-check-input float-none" type="checkbox" role="switch" id="chatToDccon">
 				</div>
+
 				<div class="form-check form-switch">
 					<label class="form-check-label flex-grow-1" for="showCopyToast">복사 알림창 표시</label>
 					<input class="form-check-input float-none" type="checkbox" role="switch" id="showCopyToast">
@@ -183,7 +193,7 @@
 
 		<div class="footer">
 			<div>디시콘 선택기 for 치지직</div>
-			<div>버전 1.0.8</div>
+			<div>버전 1.0.9</div>
 		</div>
 
 		<div class="modal fade" id="detectKeydown" tabindex="-1" aria-hidden="true">

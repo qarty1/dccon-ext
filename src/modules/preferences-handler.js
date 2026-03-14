@@ -136,6 +136,15 @@ class PreferencesHandler {
         default: 'Tab'
     };
 
+    /**
+     * DCCON_CHANGE_COUNT 변환할 디시콘 갯수
+     * default: 2
+     */
+    static DCCON_CHANGE_COUNT = {
+        msgKey: "dcconChangeCount",
+        default: 2
+    };
+
     static setToDefault() {
         this.setDcconActive(this.DCCON_ACTIVE.default).then((success) => {
             if(success) {
@@ -205,7 +214,12 @@ class PreferencesHandler {
                 console.log(`상호작용 키 세팅 : ${this.ACTION_KEY.default}`)
             }
         });
-        
+
+        this.setDcconChangeCount(this.DCCON_CHANGE_COUNT.default).then((success) => {
+            if(success) {
+                console.log(`디시콘 변환 갯수 세팅 : ${this.DCCON_CHANGE_COUNT.default}`)
+            }
+        });
     }
 
     static async setDcconActive(active) {
@@ -341,7 +355,7 @@ class PreferencesHandler {
             key = this.ACTION_KEY.default;
         }
         await browser.storage.local.set({[this.ACTION_KEY.msgKey]: key});
-        console.log(`한줄에 표시할 디시콘 : ${key}`);
+        console.log(`상호작용 키 : ${key}`);
         return true;
     }
 
@@ -351,6 +365,20 @@ class PreferencesHandler {
             return this.ACTION_KEY.default;
         }
         return result[this.ACTION_KEY.msgKey];
+    }
+
+    static async setDcconChangeCount(count) {
+        if(count == null) {
+            count = this.DCCON_CHANGE_COUNT.default;
+        }
+        await browser.storage.local.set({[this.DCCON_CHANGE_COUNT.msgKey]: count});
+        console.log(`변환할 디시콘 갯수: ${count}`);
+        return true;
+    }
+
+    static async getDcconChangeCount() {
+        let result = await browser.storage.local.get([this.DCCON_CHANGE_COUNT.msgKey]);
+        return result[this.DCCON_CHANGE_COUNT.msgKey];
     }
  }
 
