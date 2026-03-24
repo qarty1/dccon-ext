@@ -11,6 +11,9 @@ div.dcconDiv {
     right: 18px;
     z-index: 10;
 }
+div.dcconDiv.cm {
+	background: #28262f;
+}
 div.dcconDiv div.dcconHeader {
 	display: flex;
 	flex-direction: row;
@@ -150,14 +153,14 @@ ul.dcconList img.doubleConPlus {
 }
 img.dccon {
 	cursor: pointer;
-	margin: 0px;
+	margin: 0px!important;
 }
 
 ul.dcconList img[alt^="볼트공중"], img.dccon[alt^="볼트공중"] {
     animation-timeline: auto;
     animation-range-start: normal;
     animation-range-end: normal;
-    animation: 0.5s linear 0s infinite normal none running rotate;
+    animation: 0.8s linear 0s infinite normal none running rotate;
 }
 ul.dcconList img[alt^="볼트공중"] {
 	width: 90%;
@@ -183,8 +186,20 @@ marquee[direction=up]
 ,marquee[direction=down] {
 	height: 100px;
 }
+button#dcconBtn {
+	z-index: 9;
+}
+
 button#dcconBtn.on svg path {
-	stroke: rgba(0,255,163,.7)!important;
+	stroke: rgba(0,255,163,0.7)!important;
+}
+button#dcconBtn.cm.on svg path {
+	stroke: rgb(165,135,254)!important;
+}
+button#dcconBtn.cm {
+	width: 28px;
+	height: 28px;
+	margin-left: -6px;
 }
 div.copyToast {
 	color: white;
@@ -231,4 +246,10 @@ div.dccon-marquee {
 }
 div.dccon-marquee marquee{
 	vertical-align: top;
+}
+
+@media(width <= 1366px) {
+	div.dcconDiv.cm {
+		position: static;
+	}
 }
