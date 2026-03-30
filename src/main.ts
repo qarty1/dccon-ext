@@ -9,7 +9,8 @@ class SettingsManager {
   private readonly dependentSettingIds = [
     'chatToDccon', 'showCopyToast', 'dcconWindowWidth', 'dcconNewline',
     'showScrollbar', 'iconttvCompatibility', 'useTagConverter', 'typeFixed',
-    'dcconColumnCount', 'actionKey', 'dcconChangeCount', 'useDcconWindowTyping'
+    'dcconColumnCount', 'actionKey', 'dcconChangeCount', 'useDcconWindowTyping',
+    'useDcconTooltip'
   ];
 
   constructor() {
@@ -54,6 +55,7 @@ class SettingsManager {
     setCheck('useTagConverter', await PreferencesHandler.getUseTagConverter());
     setCheck('typeFixed', await PreferencesHandler.getDcconColumnFixed());
     setCheck('useDcconWindowTyping', await PreferencesHandler.getUseDcconWindowTyping());
+    setCheck('useDcconTooltip', await PreferencesHandler.getUseDcconTooltip());
 
     setVal('dcconWindowWidth', await PreferencesHandler.getDcconWindowWidth());
     setVal('dcconColumnCount', await PreferencesHandler.getDcconColumnCount());
@@ -95,6 +97,7 @@ class SettingsManager {
     this.bindCheckbox('iconttvCompatibility', PreferencesHandler.setIconttvCompatible.bind(PreferencesHandler));
     this.bindCheckbox('useTagConverter', PreferencesHandler.setUseTagConverter.bind(PreferencesHandler));
     this.bindCheckbox('useDcconWindowTyping', PreferencesHandler.setUseDcconWindowTyping.bind(PreferencesHandler));
+    this.bindCheckbox('useDcconTooltip', PreferencesHandler.setUseDcconTooltip.bind(PreferencesHandler));
 
     this.getEl('typeFixed')?.addEventListener("change", async (e: Event) => {
       const isChecked = (e.currentTarget as HTMLInputElement).checked;
@@ -121,6 +124,7 @@ class SettingsManager {
 
     this.bindNumberInput('setDcconChangeCount', 'dcconChangeCount', PreferencesHandler.setDcconChangeCount.bind(PreferencesHandler), { min: 1 });
     this.bindInitButton('initDcconChangeCount', 'dcconChangeCount', "2", () => PreferencesHandler.setDcconChangeCount(2));
+
 
     this.getEl('actionKey')?.addEventListener("click", (e: Event) => {
       e.preventDefault();
