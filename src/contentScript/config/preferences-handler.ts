@@ -160,6 +160,15 @@ class PreferencesHandler {
         default: 2
     };
 
+    /**
+     * USE_DCCON_TOOLTIP 디시콘 툴팁 사용 여부
+     * default: true
+     */
+    static readonly USE_DCCON_TOOLTIP: PreferenceConfig<boolean> = {
+        msgKey: "useDcconTooltip",
+        default: true
+    };
+
     private static cache: Record<string, any> = {};
     private static isListening = false;
 
@@ -179,6 +188,7 @@ class PreferencesHandler {
             [this.DCCON_COLUMN_COUNT.msgKey]: this.DCCON_COLUMN_COUNT.default,
             [this.ACTION_KEY.msgKey]: this.ACTION_KEY.default,
             [this.DCCON_CHANGE_COUNT.msgKey]: this.DCCON_CHANGE_COUNT.default,
+            [this.USE_DCCON_TOOLTIP.msgKey]: this.USE_DCCON_TOOLTIP.default
         };
     }
 
@@ -315,6 +325,12 @@ class PreferencesHandler {
                 // console.log(`디시콘 변환 갯수 세팅 : ${this.DCCON_CHANGE_COUNT.default}`)
             }
         });
+        this.setUseDcconTooltip(this.USE_DCCON_TOOLTIP.default).then((success) => {
+            if(success) {
+                // console.log(`디시콘 툴팁 사용 여부 세팅 : ${this.USE_DCCON_TOOLTIP.default}`)
+            }
+        });
+
     }
 
     /**
@@ -465,6 +481,14 @@ class PreferencesHandler {
     static async getDcconChangeCount(): Promise<number> {
         return this.getPref(this.DCCON_CHANGE_COUNT);
     }
+    static async getUseDcconTooltip(): Promise<boolean> {
+        return this.getPref(this.USE_DCCON_TOOLTIP);
+    }
+    static async setUseDcconTooltip(active: boolean): Promise<boolean> {
+        console.log(`디시콘 툴팁 사용 여부 : ${active}`);
+        return this.setPref(this.USE_DCCON_TOOLTIP, active);  
+    }
+    
  }
 
  export default PreferencesHandler;
