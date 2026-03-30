@@ -19,6 +19,7 @@ export class AppListener {
   private isDcconOpen: boolean = false; // 중앙 상태 관리 변수 추가
   private isDcconTypingOpen: boolean = false;
   private domController: DOMController;
+  private lastInputText: string = ''; // 직전 입력 텍스트를 저장할 변수
 
   constructor(private selector: DcconSelector) {
     // 1. 인스턴스를 한 번만 생성 (메모리 누수 및 재생성 렉 방지)
@@ -150,6 +151,7 @@ export class AppListener {
             this.domController.inputChat(text, addFlag, true, pos);
             if (showToast) GlobalUtils.showToast(text, document.querySelector(selectors.chatActionArea) as HTMLElement);
             if (isTyping) this.setDcconTypingState(false);
+            this.lastInputText = '';
           } else {
             console.warn('채팅 입력창을 활성화하는 데 실패했습니다.');
           }
@@ -166,6 +168,7 @@ export class AppListener {
             if(sendSuccess) {
               this.setDcconState(false);
               this.setDcconTypingState(false);
+              this.lastInputText = ''; // 채팅 전송 후 직전 텍스트 상태 초기화
             }
           } else {
             console.warn('채팅 입력창을 활성화하는 데 실패했습니다.');
@@ -188,7 +191,7 @@ export class AppListener {
     if (this.isDcconTypingOpen) {
       // 1. 포커스가 이미 자동완성 창 내부에 있는 경우
       if (this.dcconWindowTyping.hasFocus()) {
-        if (event.key === actionKey) {
+        if (event.key === actionKey && !event.shiftKey) {
           event.preventDefault();
           event.stopPropagation();
           this.dcconWindowTyping.focusNextItem(); // 다음 항목으로 이동
@@ -200,7 +203,7 @@ export class AppListener {
         }
       } 
       // 2. 포커스가 채팅 입력창에 있고 actionKey를 누른 경우
-      else if (event.key === actionKey) {
+      else if (event.key === actionKey && !event.shiftKey) {
         event.preventDefault();
         event.stopPropagation();
         this.dcconWindowTyping.focusNextItem(); // 창으로 포커스 진입
@@ -221,16 +224,35 @@ export class AppListener {
       if (chatInput) {
         chatInput.focus();
       }
+
+      if (event.key === 'Enter') {
+        this.lastInputText = ''; // 엔터 키로 채팅 전송 시 직전 텍스트 상태 초기화
+      }
     }
   }
 
   private onUserInput(event: Event) {
     // 확장 프로그램(디시콘 클릭 등)이 자바스크립트로 강제 발생시킨 이벤트는 무시합니다.
+    document.querySelectorAll('div[data-tippy-root]').forEach(el => el.remove()); // tippy로 생성된 툴팁이 남아있는 경우 제거
+    
     if (!event.isTrusted) return;
 
     const target = event.target as HTMLElement;
     const inputEvent = event as InputEvent;
     let text = '';
+
+    // 플랫폼별로 input이 textarea일 수도, contenteditable div일 수도 있으므로 분기 처리
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      text = target.value;
+    } else {
+      text = target.textContent || target.innerText || '';
+    }
+
+    // 실제 텍스트 내용의 변경이 없는 중복 이벤트(Firefox 한글 조합 완료 시 발생하는 이벤트 등) 방어
+    if (this.lastInputText === text) {
+      return;
+    }
+    this.lastInputText = text; // 다음 비교를 위해 현재 텍스트 저장
 
     if (inputEvent.data === ']') {
       this.chatConverter.autoClose(inputEvent);
@@ -247,16 +269,18 @@ export class AppListener {
       return;
     }
 
-    // 플랫폼별로 input이 textarea일 수도, contenteditable div일 수도 있으므로 분기 처리
-    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-      text = target.value;
-    } else {
-      text = target.textContent || target.innerText || '';
-    }
-
     const lastTildeIndex = text.lastIndexOf('~');
     
     if (lastTildeIndex !== -1) {
+
+      if((event as InputEvent).isComposing === false && (event as InputEvent).inputType === "insertCompositionText") {
+        return;
+      }
+
+      if (document.activeElement !== target) {
+        return;
+      }
+      
       const keyword = text.slice(lastTildeIndex + 1);
       
       // 공백이나 줄바꿈이 포함되어 있으면 일반 채팅으로 간주하고 검색을 중단
@@ -275,6 +299,7 @@ export class AppListener {
     // 전송 버튼 클릭 시 디시콘 윈도우 닫기
     this.setDcconState(false);
     this.setDcconTypingState(false);
+    this.lastInputText = ''; // 클릭으로 채팅 전송 시 직전 텍스트 상태 초기화
   }
 
   private onNewChatMessage(node: Node) {
