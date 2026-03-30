@@ -2,6 +2,7 @@ import browser from "webextension-polyfill";
 import PreferencesHandler from "./config/preferences-handler";
 import { DOMSelectors } from "./domSelector/domSelectors";
 import { globalObservers } from "./global-events";
+import tippy from "tippy.js";
 
 declare const dcConsData: any[]; // 외부에서 주입되는 디시콘 데이터
 
@@ -150,7 +151,7 @@ export class ChatConverter {
         img.className = "dccon";
         img.src = browser.runtime.getURL(dcCon.uri);
         img.alt = dcCon.keywords[0];
-        img.title = `${dcCon.keywords.join(",")}\r\n태그 : ${dcCon.tags.join(",")}`;
+        //img.title = `${dcCon.keywords.join(",")}\r\n태그 : ${dcCon.tags.join(",")}`;
         img.setAttribute("data-bs-toggle", "tooltip");
         img.setAttribute("data-bs-placement", "top");
 
@@ -189,6 +190,14 @@ export class ChatConverter {
             }
         });
         
+        const useTooltip = PreferencesHandler.getCached(PreferencesHandler.USE_DCCON_TOOLTIP);
+        if (useTooltip) {   
+            tippy(img, {
+                content: `${dcCon.keywords.join(",")}<br/>태그 : ${dcCon.tags.join(",")}`,
+                allowHTML: true,
+                placement: 'top',
+            });
+        }
         return img;
     }
     
