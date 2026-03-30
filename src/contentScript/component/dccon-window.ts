@@ -3,6 +3,7 @@ import PreferencesHandler from "../config/preferences-handler";
 import { DOMSelectors } from "../domSelector/domSelectors";
 import { globalObservers } from "../global-events";
 import { GlobalUtils } from "../utils/global-utils";
+import tippy from "tippy.js";
 
 declare const dcConsData: any[]; // 외부에서 주입되는 디시콘 데이터
 
@@ -118,6 +119,8 @@ export class DcconWindow {
         }
 
         if (typeof dcConsData !== 'undefined') {
+            this.createRandomDcconBtn();
+
             dcConsData.forEach(dcCon => {
                 const li = document.createElement("li");
                 const a = document.createElement("a");
@@ -160,7 +163,7 @@ export class DcconWindow {
                 });
 
                 li.setAttribute("data-bs-toggle", "tooltip");
-                li.setAttribute("title", `${keywords.join(",")}\r\n태그 : ${tags.join(",")}`);
+                //li.setAttribute("title", `${keywords.join(",")}\r\n태그 : ${tags.join(",")}`);
                 li.setAttribute("data-bs-placement", "top");
 
                 let pressTimer: number | null = null;
@@ -191,9 +194,75 @@ export class DcconWindow {
                     }
                 });
 
+                const useTooltip = PreferencesHandler.getCached(PreferencesHandler.USE_DCCON_TOOLTIP);
+                if(useTooltip) {
+                    tippy(li, {
+                        content: `${keywords.join(", ")}<br>태그: ${tags.join(", ")}`,
+                        allowHTML: true,
+                        placement: 'top',
+                        theme: 'light-border',
+                    });
+                }
                 this.ulElement.appendChild(li);
             });
         }
+    }
+    private getRandomDccon() {
+        if(typeof dcConsData !== 'undefined') {
+            const randomDccon = dcConsData[Math.floor(Math.random() * dcConsData.length)];
+            return randomDccon;
+        }
+        return null;
+    }
+
+    private createRandomDcconBtn() {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+
+        const img = document.createElement("img");
+        img.src = browser.runtime.getURL("/images/dccon/random.jpg");
+        img.className = "lazy";
+        a.appendChild(img);
+        li.appendChild(a);
+
+        li.setAttribute("data-bs-toggle", "tooltip");
+        li.setAttribute("data-bs-placement", "top");
+
+        let pressTimer: number | null = null;
+        let isLongPress = false;
+
+        li.addEventListener("mousedown", (e) => {
+            if (e.button !== 0) return; 
+            isLongPress = false;
+            pressTimer = window.setTimeout(() => {
+                const randomDccon = this.getRandomDccon();
+                const targetKeyword = randomDccon.replaceKeyword ? randomDccon.replaceKeyword : randomDccon.keywords[0];
+                isLongPress = true;
+                globalObservers.userAction?.notifyDcconLongClick("~" + targetKeyword);
+            }, 200);
+        });
+
+        li.addEventListener("mouseup", () => {
+            if (pressTimer) clearTimeout(pressTimer);
+        });
+        li.addEventListener("mouseleave", () => {
+            if (pressTimer) clearTimeout(pressTimer);
+        });
+
+        li.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (!isLongPress) {
+                const randomDccon = this.getRandomDccon();
+                const targetKeyword = randomDccon.replaceKeyword ? randomDccon.replaceKeyword : randomDccon.keywords[0];
+                globalObservers.userAction?.notifyDcconClick("~" + targetKeyword);
+            }
+        });
+        tippy(li, {
+            content: `랜덤<br/>랜덤한 디시콘을 하나 입력합니다.`,
+            allowHTML: true,
+            placement: 'top',
+        });
+        this.ulElement.appendChild(li);
     }
 
     private setupSearch() {

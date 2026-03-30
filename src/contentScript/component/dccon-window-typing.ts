@@ -3,6 +3,7 @@ import PreferencesHandler from "../config/preferences-handler";
 import { DOMSelectors } from "../domSelector/domSelectors";
 import { globalObservers } from "../global-events";
 import { GlobalUtils } from "../utils/global-utils";
+import tippy from "tippy.js";
 
 declare const dcConsData: any[]; // 외부에서 주입되는 디시콘 데이터
 
@@ -128,7 +129,7 @@ export class DcconWindowTyping {
 				});
 
 				li.setAttribute("data-bs-toggle", "tooltip");
-				li.setAttribute("title", `${keywords.join(",")}\r\n태그 : ${tags.join(",")}`);
+				//li.setAttribute("title", `${keywords.join(",")}\r\n태그 : ${tags.join(",")}`);
 				li.setAttribute("data-bs-placement", "top");
 				li.setAttribute("tabindex", "0"); // 포커스를 받기 위해 필수 속성 추가
 
@@ -165,6 +166,15 @@ export class DcconWindowTyping {
 					});
 				})(targetKeyword);
 
+                const useTooltip = PreferencesHandler.getCached(PreferencesHandler.USE_DCCON_TOOLTIP);
+                if(useTooltip) {
+                    tippy(li, {
+                        content: `${keywords.join(", ")}<br>태그: ${tags.join(", ")}`,
+                        allowHTML: true,
+                        placement: 'top',
+                        theme: 'light-border',
+                    });
+                }
 				this.ulElement.appendChild(li);
             });
         }
@@ -216,7 +226,7 @@ export class DcconWindowTyping {
                 li.style.display = 'none';
             }
         });
-
+        
         this.ulElement.scrollTop = 0;
         return hasVisible;
     }
